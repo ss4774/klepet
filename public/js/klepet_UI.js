@@ -1,7 +1,16 @@
 function divElementEnostavniTekst(sporocilo) {
-  var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
+  /*var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
   if (jeSmesko) {
+    console.log("smesko:")
     sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
+    console.log(sporocilo);
+    return $('<div style="font-weight: bold"></div>').html(sporocilo);
+  } else {
+    return $('<div style="font-weight: bold;"></div>').text(sporocilo);
+  }*/
+  var jeSlika = sporocilo.indexOf("<img") > -1;
+  if (jeSlika) {
+    sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace(/&lt;img/g, '<img').replace(/png\' \/&gt;/g, 'png\' />').replace(/gif\' \/&gt;/g, 'gif\' />').replace(/jpg\' \/&gt;/g, 'jpg\' />');
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   } else {
     return $('<div style="font-weight: bold;"></div>').text(sporocilo);
@@ -14,6 +23,7 @@ function divElementHtmlTekst(sporocilo) {
 
 function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
+  sporocilo = dodajSlike(sporocilo);
   sporocilo = dodajSmeske(sporocilo);
   var sistemskoSporocilo;
 
@@ -129,5 +139,18 @@ function dodajSmeske(vhodnoBesedilo) {
       "<img src='http://sandbox.lavbic.net/teaching/OIS/gradivo/" +
       preslikovalnaTabela[smesko] + "' />");
   }
+  return vhodnoBesedilo;
+}
+
+function dodajSlike(vhodnoBesedilo) {
+  //var str = "This is a text http://neki.png this is more text @user2. https://slikca.jpg And this is even more @user3!http:// .png https://";
+  //var matches = str.match(/https?:\/\/[^. ]*\.(jpg|png|gif)/ig);
+  //console.log(matches);
+  
+  vhodnoBesedilo = vhodnoBesedilo.replace(/https?:\/\/[^ ]+?\.(jpg|png|gif)/ig, function(izhodRegexa){
+    //if(izhodRegexa.indexOf("http://sandbox.lavbic.net/teaching/OIS/gradivo/") > -1)
+    return "<img id='slikaSporocila' src='" + izhodRegexa + "' />";
+  });
+
   return vhodnoBesedilo;
 }
