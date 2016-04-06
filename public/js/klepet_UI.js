@@ -1,7 +1,14 @@
 function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
-  if (jeSmesko) {
+  /*if (jeSmesko) {
     sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
+    return $('<div style="font-weight: bold"></div>').html(sporocilo);
+  } else {
+    return $('<div style="font-weight: bold;"></div>').text(sporocilo);
+  }*/
+  var jeVideo = sporocilo.indexOf("<iframe") > -1;
+  if (jeSmesko || jeVideo) {
+    sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />').replace(/&lt;iframe/g, '<iframe').replace(/allowfullscreen&gt;&lt;\/iframe&gt;/g, 'allowfullscreen></iframe>');
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   } else {
     return $('<div style="font-weight: bold;"></div>').text(sporocilo);
@@ -14,6 +21,7 @@ function divElementHtmlTekst(sporocilo) {
 
 function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
+  sporocilo = dodajVidee(sporocilo);
   sporocilo = dodajSmeske(sporocilo);
   var sistemskoSporocilo;
 
@@ -129,5 +137,19 @@ function dodajSmeske(vhodnoBesedilo) {
       "<img src='http://sandbox.lavbic.net/teaching/OIS/gradivo/" +
       preslikovalnaTabela[smesko] + "' />");
   }
+  return vhodnoBesedilo;
+}
+
+function dodajVidee(vhodnoBesedilo) {
+  //var str = "This is a text http://neki.png this is more text @user2. https://slikca.jpg And this is even more @user3!http:// .png https://";
+  //var matches = str.match(/https?:\/\/[^. ]*\.(jpg|png|gif)/ig);
+  //console.log(matches);
+  
+  vhodnoBesedilo = vhodnoBesedilo.replace(/https:\/\/www.youtube.com\/watch\?v=[^ \n]+/ig, function(izhodRegexa){
+    //if(izhodRegexa.indexOf("http://sandbox.lavbic.net/teaching/OIS/gradivo/") > -1)
+    var hash = izhodRegexa.substring(izhodRegexa.indexOf("v=")+2, izhodRegexa.length);
+    return "<iframe id='videoSporocila' src='https://www.youtube.com/embed/" + hash + "' allowfullscreen></iframe>";
+  });
+
   return vhodnoBesedilo;
 }
