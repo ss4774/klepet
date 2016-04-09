@@ -100,6 +100,25 @@ $(document).ready(function() {
       $('#seznam-uporabnikov').append(divElementEnostavniTekst(uporabniki[i]));
     }
   });
+  
+  socket.on('dregljaj', function(dregljaj) {
+    if(dregljaj){
+      //zatresi
+      // Initialize jRumble on Selector
+      $('#vsebina').jrumble({
+        x: 2,
+	      y: 2,
+	      rotation: 1,
+      	speed: 50
+      });
+  
+      // Start rumble on element
+      $('#vsebina').trigger('startRumble');
+      
+      // Stop rumble on element
+      setTimeout(function(){$('#vsebina').trigger('stopRumble');}, 1500);
+    }
+  });
 
   setInterval(function() {
     socket.emit('kanali');
